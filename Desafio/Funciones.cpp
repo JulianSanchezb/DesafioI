@@ -1,8 +1,18 @@
 #include <iostream>
 using namespace std;
-char o = "245";
-unsigned char mascara_desplazamiento(bool desplazamiento){
 
+unsigned char mascara_desplazamiento(bool desplazamiento,unsigned short int N){
+    /* la funcion mascara_desplazamiento recibe un boolena (desplazamiento) si es true(1) se desplaza a la derecha y si es false(0) a la izquierda
+     * y tambien un N que va a determinar que cantidad de bits es la que se esta realizando el desplazamiento
+     * esto para definir una mascara que  tenga N cantidad de 1 y el resto cero
+     */
+    unsigned char mascara;
+    if (desplazamiento){ // uso de unsigned char dado que nuestros valores son de exactamente 8 bits y la capacidad de este es de exactamente 8 bits
+        mascara = (1 << N) - 1;
+    }else{
+        mascara = ((1 << N) - 1) << (8 - N); //
+    }
+    return mascara;
 }
 
 
