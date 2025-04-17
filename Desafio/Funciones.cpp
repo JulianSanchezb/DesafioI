@@ -16,22 +16,26 @@ unsigned char mascara_desplazamiento(bool desplazamiento,unsigned short int N){
 }
 
 
-void funcion_rotacion(int img,unsigned short int n,bool desplazamiento){
+void funcion_rotacion(unsigned char* img,unsigned short int n,bool desplazamiento,int &ancho,int &alto){
     /*Esta función recibe un arreglo con valores RGB de la imagen (img)y recibe la cantidad de bits que se roto(n).
     La función realiza una rotación de bits en los valores de cada píxel,
     ya sea rotando los bits hacia la derecha o hacia la izquierda una cantidad de i veces y retorna la imagen tranformada. */
-    uint64_t mask = "10011";
-
-
-    for(int i = 0; i < size(img) ; i ++){
-        for(unsigned short int j = 0; j<n ;j++){
-            if (desplazamiento){
-                img[i] >> b ;
-            }else{
-
-            }
-
+    unsigned char num;
+    unsigned char mask = mascara_desplazamiento(desplazamiento,n);
+    int size = ancho * alto * 3;
+    for(int i = 0; i < size; i++){
+        num = img[i];
+        unsigned char temp_mask = num & mask;
+        if(desplazamiento){
+            num = num >> n;
+            temp_mask = temp_mask << (8-n);
+        }else{
+            num = num << n;
+            temp_mask = temp_mask >> (8-n);
         }
+        img[i] = num | temp_mask;
     }
 
 }
+
+
