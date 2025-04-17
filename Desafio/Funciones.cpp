@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+
 unsigned char mascara_desplazamiento(bool desplazamiento,unsigned short int N){
     /* la funcion mascara_desplazamiento recibe un boolena (desplazamiento) si es true(1) se desplaza a la derecha y si es false(0) a la izquierda
      * y tambien un N que va a determinar que cantidad de bits es la que se esta realizando el desplazamiento
@@ -14,7 +15,6 @@ unsigned char mascara_desplazamiento(bool desplazamiento,unsigned short int N){
     }
     return mascara;
 }
-
 
 void funcion_rotacion(unsigned char* img,unsigned short int n,bool desplazamiento,int &ancho,int &alto){
     /*Esta función recibe un arreglo con valores RGB de la imagen (img)y recibe la cantidad de bits que se roto(n).
@@ -33,9 +33,8 @@ void funcion_rotacion(unsigned char* img,unsigned short int n,bool desplazamient
             num = num << n;
             temp_mask = temp_mask >> (8-n);
         }
-        img[i] = num | temp_mask;
+        img[i] = num |temp_mask;
     }
-
 }
 
 
