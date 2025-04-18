@@ -38,3 +38,19 @@ void funcion_rotacion(unsigned char* img,unsigned short int n,bool desplazamient
 }
 
 
+void funcion_desplazamiento(unsigned char* img,unsigned short int n,bool desplazamiento,int &ancho,int &alto ){
+    /* la funcion mascara_desplazamiento recibe un arreglo con valores RGB de la imagen,
+     * recibe un booleano (desplazamiento) si es true(1) se desplaza a la derecha y si es false(0) a la izquierda
+     * y tambien un N que va a determinar que cantidad de bits es la que se esta realizando el desplazamiento
+     */
+    unsigned int size= ancho * alto * 3;
+    for(unsigned int i = 0; i < (size) ; i ++){ //recorro todo el arreglo y lo desplazo
+        if (desplazamiento){
+            img[i] = img[i]  >> n ;//desplazo n valores a la derecha
+        }else{
+            img[i] = img[i]  << n ;//desplazo n valores a la izquierda
+        }
+    }
+
+}
+
