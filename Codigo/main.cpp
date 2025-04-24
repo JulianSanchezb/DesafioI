@@ -1,5 +1,6 @@
 #include <QCoreApplication>
 #include <funciones.h>
+#include <usoimg.h>
 #include <iostream>
 
 using namespace std;
@@ -8,6 +9,15 @@ using namespace std;
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
+    int altura, ancho,alturaM,anchoM;
+    QString archivoMascara = "M.bmp";
+    QString imgD = ".bmp";
+    unsigned char *Mascara = loadPixels(archivoMascara, anchoM, alturaM);
+    unsigned char *imgP = loadPixels(imgD, ancho, altura);
+
+    for(int i = 0;i < n;i++){
+        fucion_de_cambio(img_D,Mascara,ancho, alto);
+    }
 
     // Set up code that uses the Qt event loop here.
     // Call a.quit() or a.exit() to quit the application.
@@ -20,5 +30,5 @@ int main(int argc, char *argv[])
     // If you do not need a running Qt event loop, remove the call
     // to a.exec() or use the Non-Qt Plain C++ Application template.
 
-    return a.exec();
+    return 0;
 }

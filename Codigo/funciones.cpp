@@ -1,4 +1,6 @@
 #include <iostream>
+#include <QCoreApplication>
+#include <usoimg.h>
 using namespace std;
 
 
@@ -16,7 +18,7 @@ unsigned char mascara_desplazamiento(bool desplazamiento,unsigned short int N){
     return mascara;
 }
 
-void funcion_rotacion(unsigned char* img,unsigned char* arr,unsigned short int n,bool desplazamiento,int &ancho,int &alto){
+void funcion_rotacion(unsigned char* img,unsigned char* arr,unsigned short int n,bool desplazamiento,int ancho,int alto){
     /*Esta función recibe un arreglo con valores RGB de la imagen (img)y recibe la cantidad de bits que se roto(n).
     La función realiza una rotación de bits en los valores de cada píxel,
     ya sea rotando los bits hacia la derecha o hacia la izquierda una cantidad de i veces y retorna la imagen tranformada. */
@@ -37,7 +39,7 @@ void funcion_rotacion(unsigned char* img,unsigned char* arr,unsigned short int n
     }
 }
 
-void funcion_xor(unsigned char* img_D,unsigned char* img_M,unsigned char* arr,int &ancho,int &alto){
+void funcion_xor(unsigned char* img_D,unsigned char* img_M,unsigned char* arr,int ancho,int alto){
     //esta funcion aplica la operacion xor a dos arreglos
     unsigned int size= ancho * alto * 3;
     for(unsigned int i = 0; i < (size) ; i ++){ //recorro todo el arreglo
@@ -45,7 +47,7 @@ void funcion_xor(unsigned char* img_D,unsigned char* img_M,unsigned char* arr,in
     }
 }
 
-void funcion_desplazamiento(unsigned char* img,unsigned char* arr,unsigned short int n,bool desplazamiento,int &ancho,int &alto ){
+void funcion_desplazamiento(unsigned char* img,unsigned char* arr,unsigned short int n,bool desplazamiento,int ancho,int alto ){
     /* la funcion mascara_desplazamiento recibe un arreglo con valores RGB de la imagen,
      * recibe un booleano (desplazamiento) si es true(1) se desplaza a la derecha y si es false(0) a la izquierda
      * y tambien un N que va a determinar que cantidad de bits es la que se esta realizando el desplazamiento
@@ -61,20 +63,53 @@ void funcion_desplazamiento(unsigned char* img,unsigned char* arr,unsigned short
 
 }
 
-int fucion_de_cambio(unsigned char* img_D,unsigned char* img_M,const char* M1,const char* M,unsigned char* Mascara,int &ancho,int &alto){
+unsigned int* aplicacion_Mascara(unsigned char* Mascara, unsigned char* img_D, int anchoM, int altoM){  //DECIDIR SI PASAR LA SEMILLA COMO PARAMETRO SI SE VA A PASAR TODA LA IMAGEN
+    size = anchoM * altoM * 3;
+    unsigned int* arr = new int[size / 2];
+    for(int i = 0;i < (size / 2);i++){
+        arr[i] = img_D[i] + Mascara[i];
+    }
+    return arr; //Lo retorno para compararlo afuera
+}
+
+void comparar_txt(unsigned int* txt,unsigned int* mascara_aplicada){
+
+}
+
+int fucion_de_cambio(unsigned char* img_D,unsigned char* Mascara,int ancho,int alto){
     /* esta funcion recibe imagenes y las cambia y comprueba
      */
+    QString imgM = "Im.bmp";
     unsigned int size= ancho * alto * 3;
-    unsigned char *img_F = new unsigned char[size];
+    unsigned char *img_F = new unsigned char[size]; //Arreglo para guardar los resultados que iremos obteniendo
+    unsigned char *img_M = loadPixels(imgM, ancho, alto);   //Arreglo que guarda la imagen mascara para los Xor
 
-    img_F = F_xor(img_D,img_M);
-    M = img_D + Mascara; // S(k) = ID(k + s) + M(k) para 0 ≤ k < i × j × 3
+    F_xor(img_D, img_M, img_F, ancho, alto);
+
     if (M == M1){
         cout<<"la operacion es XOR"<<endl;
-        return o;
+
     }else{
         img_D = F_xor(img_D,img_M);
     }
+    bool value = false;
+    for(int i = 1; i < 8; i++){ // Comprueba rotaciones
+        funcion_rotacion(s, img_F, i, true, ancho, alto);
+
+        value = true;
+
+        for(int t = 0; t < 12; t++){
+            if(j[t] != img_F[t]){ //HAY QUE CAMBIAR EL ARREGLO J QUE ES CON EL QUE SE COMPARA EL RESULTADO
+                value = false;
+                break;
+            }
+        }
+        if(value){
+            cout << "Se hizo una rotacion de " << i<< " bits hacia la izquierda o " << (8 - i)<< " bits a la derecha\n";
+            break;
+        }
+    }
+
     for(i=1;i<=8;i++){
         img_F = funcion_desplazamiento(img_D,img_F,i,1,ancho,alto);
         // para el desplazamiento en caso de usar mi propuesta se tiene que guardar los bits perdidos y
@@ -97,22 +132,7 @@ int fucion_de_cambio(unsigned char* img_D,unsigned char* img_M,const char* M1,co
         }else{
             img_D = img_D | mascara_desplazamiento(0,i);
         }
-        img_D = funcion_rotacion(img_D,i,1);
-        M = img_D + Mascara;
-        if(M == M1){
-            cout<< "La transformacion fue i rotacion a la derecha"<<endl;
-            return 0;
-        }else{
-            img_D = funcion_rotacion(img_D,i,0);
-        }
-        img_D = funcion_rotacion(img_D,i,0);
-        M = img_D + Mascara;
-        if(M == M1){
-            cout<< "La transformacion fue i rotacion a la izquierda"<<endl;
-            return 0;
-        }else{
-            img_D = funcion_rotacion(img_D,i,0);
-        }
+
 
     }
     delete[] img_F;
