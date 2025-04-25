@@ -1,7 +1,43 @@
 #include <iostream>
 #include <QCoreApplication>
 #include <usoimg.h>
+#include <string>
+#include <filesystem> // verificar posibilidad de uso
 using namespace std;
+
+bool recuperar_con_mascara(unsigned char desplazado, int n, unsigned int original,bool desplazamiento) {
+    int total = 1 << n;
+    for (int i = 0; i < total; ++i) {
+        unsigned char mascara = 0;
+
+        // Ahora colocamos los bits perdidos en las posiciones correctas (desde la izquierda)
+        if (desplazamiento){
+            for (int bit = 0; bit < n; ++bit) {
+                if (i & (1 << bit)) {
+                    int pos = 7 - bit; // para que bit 0 vaya a 7, 1 a 6, 2 a 5, etc.
+                    mascara |= (1 << pos);
+                }
+            }
+        }else{
+            // Ahora colocamos los bits perdidos en las posiciones de derecha a izquierda
+            for (int bit = 0; bit < n; ++bit) {
+                if (i & (1 << bit)) {
+                    int pos = bit; // bit 0 va a posición 0, bit 1 a 1, etc.
+                    mascara |= (1 << pos);
+                }
+            }
+        }
+
+
+        unsigned char resultado = desplazado | mascara;
+        if (resultado == original) {
+            //cout << (int)resultado <<endl;
+            cout <<(int)resultado << ": "<<static_cast<int>(mascara)<< "n:" <<n << endl;
+            return true;
+        }
+    }
+    return false;
+}
 
 
 unsigned char mascara_desplazamiento(bool desplazamiento,unsigned short int N){
@@ -18,10 +54,11 @@ unsigned char mascara_desplazamiento(bool desplazamiento,unsigned short int N){
     return mascara;
 }
 
+
 void funcion_rotacion(unsigned char* img,unsigned char* arr,unsigned short int n,bool desplazamiento,int ancho,int alto){
     /*Esta función recibe un arreglo con valores RGB de la imagen (img)y recibe la cantidad de bits que se roto(n).
     La función realiza una rotación de bits en los valores de cada píxel,
-    ya sea rotando los bits hacia la derecha o hacia la izquierda una cantidad de i veces y retorna la imagen tranformada. */
+    ya sea rotando los bits hacia la derecha o hacia la izquierda una cantidad de i veces y retorna la imagen tranformada.*/
     unsigned char num;
     unsigned char mask = mascara_desplazamiento(desplazamiento,n);
     int size = ancho * alto * 3;
@@ -41,9 +78,10 @@ void funcion_rotacion(unsigned char* img,unsigned char* arr,unsigned short int n
 
 void funcion_xor(unsigned char* img_D,unsigned char* img_M,unsigned char* arr,int ancho,int alto){
     //esta funcion aplica la operacion xor a dos arreglos
-    unsigned int size= ancho * alto * 3;
+    unsigned int size= ancho * alto * 3 ;
     for(unsigned int i = 0; i < (size) ; i ++){ //recorro todo el arreglo
         arr[i] = img_D[i] ^ img_M[i];
+
     }
 }
 
@@ -52,7 +90,7 @@ void funcion_desplazamiento(unsigned char* img,unsigned char* arr,unsigned short
      * recibe un booleano (desplazamiento) si es true(1) se desplaza a la derecha y si es false(0) a la izquierda
      * y tambien un N que va a determinar que cantidad de bits es la que se esta realizando el desplazamiento
      */
-    unsigned int size= ancho * alto * 3;
+    unsigned int size= ancho * alto ;
     for(unsigned int i = 0; i < (size) ; i ++){ //recorro todo el arreglo y lo desplazo
         if (desplazamiento){
             arr[i] = img[i]  >> n ;//desplazo n valores a la derecha
@@ -63,77 +101,105 @@ void funcion_desplazamiento(unsigned char* img,unsigned char* arr,unsigned short
 
 }
 
-unsigned int* aplicacion_Mascara(unsigned char* Mascara, unsigned char* img_D, int anchoM, int altoM){  //DECIDIR SI PASAR LA SEMILLA COMO PARAMETRO SI SE VA A PASAR TODA LA IMAGEN
-    size = anchoM * altoM * 3;
-    unsigned int* arr = new int[size / 2];
-    for(int i = 0;i < (size / 2);i++){
+void aplicacion_Mascara(unsigned char* Mascara, unsigned char* img_D,unsigned int* arr){  //DECIDIR SI PASAR LA SEMILLA COMO PARAMETRO SI SE VA A PASAR TODA LA IMAGEN
+    for(int i = 0;i < 15;i++){
         arr[i] = img_D[i] + Mascara[i];
+
     }
-    return arr; //Lo retorno para compararlo afuera
 }
 
-void comparar_txt(unsigned int* txt,unsigned int* mascara_aplicada){
-
+bool comparar_txt(unsigned int* txt,unsigned int* mascara_aplicada){
+    unsigned short int j = 0;
+    for (int i = 0;i< 15 ;i++){
+        if(txt[i] == mascara_aplicada[i]){
+            j ++ ;
+        }else{
+            break;
+        }
+    }
+    if (j ==  15){
+        return true;
+    }else{
+        return false;
+    }
 }
 
-int fucion_de_cambio(unsigned char* img_D,unsigned char* Mascara,int ancho,int alto){
+void seccion_img_original(unsigned char* img_o,unsigned char* img_porcion,int seed){
+    for(unsigned int i = 0; i < 15; i ++){
+        img_porcion[i] = img_o[seed + i];
+    }
+}
+
+int fucion_de_cambio(unsigned char* img_D,unsigned char* Mascara,int ancho,int alto,unsigned int* txt,int seed){
     /* esta funcion recibe imagenes y las cambia y comprueba
      */
-    QString imgM = "Im.bmp";
-    unsigned int size= ancho * alto * 3;
-    unsigned char *img_F = new unsigned char[size]; //Arreglo para guardar los resultados que iremos obteniendo
-    unsigned char *img_M = loadPixels(imgM, ancho, alto);   //Arreglo que guarda la imagen mascara para los Xor
+    QString imgM = "I_M.bmp";
+    unsigned char img_F[15];    //Arreglo para guardar los resultados que iremos obteniendo
+    unsigned char img_h[15];
+    unsigned int img_pp[15];
 
-    F_xor(img_D, img_M, img_F, ancho, alto);
-
-    if (M == M1){
+    unsigned char *img_M = loadPixels(imgM, ancho, alto);//Arreglo que guarda la imagen mascara para los Xor
+    unsigned short int c = 0;
+    cout<<img_D[0]<<endl;
+    seccion_img_original(img_M,img_h,seed);
+    seccion_img_original(img_D,img_F,seed);
+    funcion_xor(img_F, img_h, img_F, 5, 1);
+    aplicacion_Mascara(Mascara,img_F,img_pp);
+    if (comparar_txt(txt,img_pp)){
         cout<<"la operacion es XOR"<<endl;
-
+        funcion_xor(img_D, img_M, img_D, ancho, alto);
+        delete[] img_M;
+        return 0;
     }else{
-        img_D = F_xor(img_D,img_M);
+        delete[] img_M;
     }
+    seccion_img_original(img_D,img_F,seed);
     bool value = false;
     for(int i = 1; i < 8; i++){ // Comprueba rotaciones
-        funcion_rotacion(s, img_F, i, true, ancho, alto);
-
+        seccion_img_original(img_D,img_F,seed);
+        funcion_rotacion(img_F, img_h, i, true, 5, 1);
+        aplicacion_Mascara(Mascara,img_h,img_pp);
         value = true;
-
-        for(int t = 0; t < 12; t++){
-            if(j[t] != img_F[t]){ //HAY QUE CAMBIAR EL ARREGLO J QUE ES CON EL QUE SE COMPARA EL RESULTADO
+        for(int t = 0; t < 15; t++){
+            if(txt[t] != img_pp[t]){
                 value = false;
                 break;
             }
         }
         if(value){
-            cout << "Se hizo una rotacion de " << i<< " bits hacia la izquierda o " << (8 - i)<< " bits a la derecha\n";
+            cout << "Se hizo una rotacion de " << i << " bits hacia la izquierda o " << (8 - i)<< " bits a la derecha\n";
+            funcion_rotacion(img_D,img_D,i,true,ancho,alto);
             break;
         }
     }
 
-    for(i=1;i<=8;i++){
-        img_F = funcion_desplazamiento(img_D,img_F,i,1,ancho,alto);
-        // para el desplazamiento en caso de usar mi propuesta se tiene que guardar los bits perdidos y
-        //usar la mascara para volver al original
-        M = img_D + Mascara;
-        if(M == M1){
-            cout << "La transformacion fue i desplazamiento a la derecha"<<endl;
-            unsigned int size= ancho * alto * 3;
-            for(unsigned int i = 0; i < (size) ; i ++){ //recorro todo el arreglo
-                img_D[i] = img_F[i] ;
+    for(unsigned short int i=1;i<=8;i++){ //comprueba el desplazamiento
+        funcion_desplazamiento(img_D,img_F,i,1,5,1);
+        aplicacion_Mascara(Mascara,img_F,img_pp);
+        for (unsigned short int k = 0 ; k<15 ; k ++){
+            if(recuperar_con_mascara(img_F[k],k,txt[k],1)){
+                c ++;
+            }else{
+                break;
             }
-        }else{
-            img_D = img_D | mascara_desplazamiento(1,i);
         }
-        img_D = funcion_desplazamiento(img_D,0,i);
-        M = img_D + Mascara;
-        if(M == M1){
-            cout<< "La transformacion fue i desplazamiento a la izquierda"<<endl;
+        if (c == 15){
+            cout<<"El despalzamiento fue de "<<i<<" hacia la izquierda"<<endl;
+            funcion_desplazamiento(img_D,img_D,i,1,ancho,alto);
             return 0;
-        }else{
-            img_D = img_D | mascara_desplazamiento(0,i);
         }
-
-
+        for (unsigned short int k = 0 ; k<15 ; k ++){
+            if(recuperar_con_mascara(img_F[k],k,txt[k],0)){
+                c ++;
+            }else{
+                break;
+            }
+        }
+        if (c == 15){
+            cout<<"El despalzamiento fue de "<<i<<" hacia la derecha"<<endl;
+            funcion_desplazamiento(img_D,img_D,i,1,ancho,alto);
+            return 0;
+        }
     }
-    delete[] img_F;
+    return 0;
 }

@@ -6,29 +6,29 @@
 using namespace std;
 
 
-int main(int argc, char *argv[])
+int main()
 {
-    QCoreApplication a(argc, argv);
-    int altura, ancho,alturaM,anchoM;
+    int altura, ancho,alturaM,anchoM,seed,n_pixel;
     QString archivoMascara = "M.bmp";
-    QString imgD = ".bmp";
+    QString imgD = "I_D.bmp";
+    QString imagen = "P2.bmp";
+    //const string ruta = "ruta/a/tu/carpeta";
+    const char* txt_ar = "M2.txt";
     unsigned char *Mascara = loadPixels(archivoMascara, anchoM, alturaM);
     unsigned char *imgP = loadPixels(imgD, ancho, altura);
+    unsigned int *txt = loadSeedMasking(txt_ar,seed,n_pixel);
+    fucion_de_cambio(imgP,Mascara,ancho,altura,txt,seed);
+    txt_ar = "M1.txt";
+    txt = loadSeedMasking(txt_ar,seed,n_pixel);
+    fucion_de_cambio(imgP,Mascara,ancho,altura,txt,seed);
+    txt_ar = "M0.txt";
+    txt = loadSeedMasking(txt_ar,seed,n_pixel);
+    fucion_de_cambio(imgP,Mascara,ancho,altura,txt,seed);
+    exportImage(imgP,ancho,altura,imagen);
 
-    for(int i = 0;i < n;i++){
-        fucion_de_cambio(img_D,Mascara,ancho, alto);
-    }
 
-    // Set up code that uses the Qt event loop here.
-    // Call a.quit() or a.exit() to quit the application.
-    // A not very useful example would be including
-    // #include <QTimer>
-    // near the top of the file and calling
-    // QTimer::singleShot(5000, &a, &QCoreApplication::quit);
-    // which quits the application after 5 seconds.
 
-    // If you do not need a running Qt event loop, remove the call
-    // to a.exec() or use the Non-Qt Plain C++ Application template.
+
 
     return 0;
 }
