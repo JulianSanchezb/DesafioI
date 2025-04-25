@@ -9,6 +9,7 @@ CONFIG += c++17 cmdline
 SOURCES += \
         funciones.cpp \
         main.cpp \
+        operaciones_bits.cpp \
         usoimg.cpp
 
 # Default rules for deployment.
@@ -18,4 +19,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     funciones.h \
+    operaciones_bits.h \
     usoimg.h
