@@ -1,4 +1,3 @@
-#include <QCoreApplication>
 #include <funciones.h>
 #include <usoimg.h>
 #include <operaciones_bits.h>
@@ -12,7 +11,6 @@ int main()
     int altura, ancho, alturaM, anchoM, seed, n_pixel;
     //unsigned short int bits = 0;
     //bool direccion = false;
-
     QString archivoMascara = "M.bmp";
     QString imgD = "I_D.bmp";
     QString imagen = "I_O.bmp";
@@ -56,7 +54,7 @@ int main()
 
         cout<<"\nPaso: "<<i + 1<<endl;
 
-        if(fucion_de_cambio(imgP,Mascara,ancho,altura,txt,seed) != 0){
+        if(fucion_de_cambio(imgP, Mascara, ancho, altura, txt, seed) != 0){
             cout<<"No se hizo ninguna transformacion\n";
         }
 
