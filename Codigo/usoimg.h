@@ -1,3 +1,4 @@
+#include <QCoreApplication>
 #ifndef USOIMG_H
 #define USOIMG_H
 

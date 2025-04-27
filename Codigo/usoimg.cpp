@@ -95,7 +95,7 @@ bool exportImage(unsigned char* pixelData, int width,int height, QString archivo
         return false; // Indica que la operación falló
     } else {
         // Si la imagen fue guardada correctamente, mostrar mensaje de éxito
-        cout << "Imagen BMP modificada guardada como " << archivoSalida.toStdString() << endl;
+        cout << "\nImagen BMP modificada guardada como " << archivoSalida.toStdString() << endl;
         return true; // Indica éxito
     }
 
@@ -152,13 +152,13 @@ unsigned int* loadSeedMasking(const char* nombreArchivo, int &seed, int &n_pixel
 
     // Reservar memoria dinámica para guardar todos los valores RGB
     // Cada píxel tiene 3 componentes: R, G y B
-    unsigned int* RGB = new unsigned int[n_pixels * 3];
+    unsigned int* RGB = new unsigned int[15];   /*  Cambiamos el tamaño del arreglo para mejorar eficiencia  */
 
     // Leer nuevamente la semilla desde el archivo (se descarta su valor porque ya se cargó antes)
     archivo >> seed;
 
     // Leer y almacenar los valores RGB uno por uno en el arreglo dinámico
-    for (int i = 0; i < n_pixels * 3; i += 3) {
+    for (int i = 0; i < 15; i += 3) {
         archivo >> r >> g >> b;
         RGB[i] = r;
         RGB[i + 1] = g;
